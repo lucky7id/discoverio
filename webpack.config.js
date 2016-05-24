@@ -44,18 +44,18 @@ const FE = {
 
     resolve: {
         extensions: [
-            '', '.js'
+            '', '.js', '.jsx'
         ]
     },
 
     module: {
         loaders: [
             {
-              test: /\.js$/,
-              loaders: ['react-hot', 'babel'],
-              include: path.join(__dirname, 'src', 'client')
-            },
+              test: /\.(js|jsx)$/,
+              loaders: ['babel-loader?plugins[]=../server/babel-relay-plugin.js&presets[]=react&presets[]=es2015'],
+              include: path.join(__dirname, 'src', 'client'),
 
+          },
             /*
              * Json loader support for *.json files.
              *
@@ -91,6 +91,9 @@ const FE = {
     },
 
     plugins: [
+        new webpack.ProvidePlugin({
+            'Promise': 'bluebird',
+        }),
         new webpack.HotModuleReplacementPlugin(),
         /*
          * Plugin: OccurenceOrderPlugin
@@ -137,6 +140,7 @@ const FE = {
         port: '8080',
         host: '127.0.0.1',
         historyApiFallback: true,
+        proxy: {'/graphql': `http://localhost:3000`},
         watchOptions: {
             aggregateTimeout: 300,
             poll: 1000
@@ -168,9 +172,12 @@ var Serv = {
     externals: /^[a-z\-0-9]+$/,
 
     plugins: [
-    // enable source-map-support by installing at the head of every chunk
-    new webpack.BannerPlugin('require("source-map-support").install();',
-        {raw: true, entryOnly: false})
+        new webpack.ProvidePlugin({
+            'Promise': 'bluebird',
+        }),
+        // enable source-map-support by installing at the head of every chunk
+        new webpack.BannerPlugin('require("source-map-support").install();',
+            {raw: true, entryOnly: false})
     ],
 
     module: {
@@ -179,7 +186,10 @@ var Serv = {
                 // transpile all .js files using babel
                 test: /\.js$/,
                 exclude: /node_modules/,
-                loader: 'babel'
+                loader: 'babel',
+                query: {
+                    presets: ['es2015']
+                }
             },
             {
                 // transpile all .js files using babel
