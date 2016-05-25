@@ -7,6 +7,7 @@ const isServer = process.env.__SRV__;
  */
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+var plugin = path.join(__dirname, "src/server/babel-relay-plugin.js");
 
 const packageSort = (a, b) => {
     switch (a.names[0]) {
@@ -52,7 +53,7 @@ const FE = {
         loaders: [
             {
               test: /\.(js|jsx)$/,
-              loaders: ['babel-loader?plugins[]=../server/babel-relay-plugin.js&presets[]=react&presets[]=es2015'],
+              loaders: [`babel-loader?plugins[]=${plugin},presets[]=react,presets[]=es2015,passPerPreset=true`],
               include: path.join(__dirname, 'src', 'client'),
 
           },
