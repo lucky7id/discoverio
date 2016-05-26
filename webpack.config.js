@@ -10,8 +10,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const packageSort = (a, b) => {
     switch (a.names[0]) {
-        case 'polyfills':
-            return -1;
         case 'main':
             return 1;
         case 'vendor':
@@ -27,8 +25,8 @@ const FE = {
     context: path.join(__dirname, 'src/client'),
 
     entry: {
-        'vendor': './vendor.js',
-        'browser': './index.js'
+        'vendor': './src/vendor.js',
+        'browser': './src/index.js'
     },
 
     modulesDirectories: ['node_modules'],
@@ -92,7 +90,7 @@ const FE = {
 
     sassLoader: {
         includePaths: [path.resolve(__dirname, 'src/client/assets/styles')]
-    }
+    },
 
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
@@ -115,7 +113,7 @@ const FE = {
          * See: https://github.com/webpack/docs/wiki/optimization#multi-page-app
          */
         new webpack.optimize.CommonsChunkPlugin({
-          name: ['vendor', 'polyfills']
+          name: ['vendor']
         }),
 
 
