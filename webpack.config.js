@@ -7,7 +7,6 @@ const isServer = process.env.__SRV__;
  */
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-var plugin = path.join(__dirname, "src/server/babel-relay-plugin.js");
 
 const packageSort = (a, b) => {
     switch (a.names[0]) {
@@ -25,11 +24,11 @@ const packageSort = (a, b) => {
 const FE = {
     debug: true,
 
-    context: path.join(__dirname, 'src'),
+    context: path.join(__dirname, 'src/client'),
 
     entry: {
-        'vendor': './client/vendor.js',
-        'browser': './client/index.js'
+        'vendor': './vendor.js',
+        'browser': './index.js'
     },
 
     modulesDirectories: ['node_modules'],
@@ -45,7 +44,7 @@ const FE = {
 
     resolve: {
         extensions: [
-            '', '.js', '.jsx'
+            '', '.js', '.jsx', '.sass'
         ]
     },
 
@@ -53,7 +52,7 @@ const FE = {
         loaders: [
             {
               test: /\.(js|jsx)$/,
-              loaders: [`babel-loader?plugins[]=${plugin},presets[]=react,presets[]=es2015,passPerPreset=true`],
+              loaders: [`babel-loader?presets[]=react,presets[]=es2015,passPerPreset=true`],
               include: path.join(__dirname, 'src', 'client'),
 
           },
@@ -74,8 +73,8 @@ const FE = {
              * See: https://github.com/webpack/raw-loader
              */
             {
-              test: /\.css$/,
-              loader: 'raw-loader'
+              test: /\.sass$/,
+              loaders: ['style', 'css', 'sass']
             },
 
             /* Raw loader support for *.html
@@ -91,10 +90,11 @@ const FE = {
         ]
     },
 
+    sassLoader: {
+        includePaths: [path.resolve(__dirname, 'src/client/assets/styles')]
+    }
+
     plugins: [
-        new webpack.ProvidePlugin({
-            'Promise': 'bluebird',
-        }),
         new webpack.HotModuleReplacementPlugin(),
         /*
          * Plugin: OccurenceOrderPlugin
@@ -193,7 +193,6 @@ var Serv = {
                 }
             },
             {
-                // transpile all .js files using babel
                 test: /\.json$/,
                 exclude: /node_modules/,
                 loader: 'json-loader'
