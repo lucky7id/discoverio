@@ -1,0 +1,55 @@
+schema {
+  query: Root
+}
+
+type Movie {
+  adult: Boolean
+  backdrop_path: String
+  genre_ids: [Int]
+  id: ID!
+  original_language: String
+  original_title: String
+  overview: String
+  origin_country: [String]
+  release_date: String
+  poster_path: String
+  popularity: Float
+  title: String
+  video: Boolean
+  vote_average: Float
+  vote_count: Int
+  media_type: String
+}
+
+union MultiMedia = Show | Movie
+
+interface Node {
+  id: ID!
+}
+
+type Root {
+  viewer: User
+  node(id: ID!): Node
+}
+
+type Show {
+  backdrop_path: String
+  first_air_date: String
+  genre_ids: [Int]
+  id: ID!
+  original_language: String
+  original_name: String
+  overview: String
+  origin_country: [String]
+  poster_path: String
+  popularity: Float
+  name: String
+  vote_average: Float
+  vote_count: Int
+  media_type: String
+}
+
+type User implements Node {
+  id: ID!
+  results(name: String = "any"): MultiMedia
+}
