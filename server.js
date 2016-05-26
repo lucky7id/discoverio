@@ -4,20 +4,10 @@ import path from 'path';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import {Schema} from './data/schema';
+import proxy from 'http-proxy-middleware';
 
-const APP_PORT = 3000;
+const APP_PORT = 3001;
 const GRAPHQL_PORT = 8080;
-
-// Expose a GraphQL endpoint
-var graphQLServer = express();
-graphQLServer.use('/', graphQLHTTP({
-  graphiql: true,
-  pretty: true,
-  schema: Schema,
-}));
-graphQLServer.listen(GRAPHQL_PORT, () => console.log(
-  `GraphQL Server is now running on http://localhost:${GRAPHQL_PORT}`
-));
 
 // Serve the Relay app
 var compiler = webpack({
@@ -35,12 +25,29 @@ var compiler = webpack({
 });
 var app = new WebpackDevServer(compiler, {
   contentBase: '/public/',
-  proxy: {'/graphql': `http://localhost:${GRAPHQL_PORT}`},
   publicPath: '/js/',
+  proxy: {
+      '/graphql': 'http://api.yukine.me/'
+  },
   stats: {colors: true}
 });
+
+// const auth = (req, res, next) => {
+//     req.setHeader('X-Auth-Token', 'ilovecats');
+//     next();
+// }
 // Serve static resources
 app.use('/', express.static(path.resolve(__dirname, 'public')));
+// app.use('/graphql', proxy({
+//     target: 'http://api.yukine.me',
+//     headers: {
+//         'X-Auth-Token': 'ilovecats'
+//     }
+// }))
 app.listen(APP_PORT, () => {
   console.log(`App is now running on http://localhost:${APP_PORT}`);
 });
+
+// app.on('proxyReq', (proxyReq, req, res, options) => {
+//     proxyReq.setHeader('X-Auth-Token', 'ilovecats');
+// })

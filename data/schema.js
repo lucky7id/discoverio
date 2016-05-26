@@ -1,12 +1,5 @@
-/**
- *  Copyright (c) 2015, Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
- */
-
+import config from  '../config.json';
+import MovieDb from 'moviedb';
 import {
   GraphQLBoolean,
   GraphQLFloat,
@@ -15,6 +8,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
+  GraphQLUnionType,
   GraphQLSchema,
   GraphQLString,
 } from 'graphql';
@@ -29,115 +23,289 @@ import {
   nodeDefinitions,
 } from 'graphql-relay';
 
-import {
-  // Import methods that your schema can use to interact with your database
-  User,
-  Widget,
-  getUser,
-  getViewer,
-  getWidget,
-  getWidgets,
-} from './database';
+const mdb = MovieDb(config.api_key);
 
-/**
- * We get the node interface and field from the Relay library.
- *
- * The first method defines the way we resolve an ID to its object.
- * The second defines the way we resolve an object to its GraphQL type.
- */
-var {nodeInterface, nodeField} = nodeDefinitions(
-  (globalId) => {
-    var {type, id} = fromGlobalId(globalId);
-    if (type === 'User') {
-      return getUser(id);
-    } else if (type === 'Widget') {
-      return getWidget(id);
-    } else {
-      return null;
-    }
+const { nodeInterface, nodeField } = nodeDefinitions(
+  globalId => {
+      var {type, id} = fromGlobalId(globalId);
+
+      return data[type][id];
   },
-  (obj) => {
-    if (obj instanceof User) {
-      return userType;
-    } else if (obj instanceof Widget)  {
-      return widgetType;
-    } else {
-      return null;
+  object => {
+    switch (object.media_type) {
+        case 'tv':
+            return 'Show';
+        case 'movie':
+            return 'Movie';
     }
   }
 );
 
-/**
- * Define your own types here
- */
+const creatorType = new GraphQLObjectType({
+    name: 'Creator',
+    fields: {
+        id: { type: GraphQLInt },
+        name: { type: GraphQLString },
+        profile_path: { type: GraphQLString }
+    }
+});
 
-var userType = new GraphQLObjectType({
+const seasonType = new GraphQLObjectType({
+    name: 'Season',
+    fields: {
+        air_date: { type: GraphQLString },
+        episode_count: { type: GraphQLInt },
+        id: { type: GraphQLInt },
+        poster_path: { type: GraphQLString },
+        season_number: { type: GraphQLInt }
+    }
+});
+
+const genType = new GraphQLObjectType({
+    name: 'General',
+    fields: {
+        id: { type: GraphQLInt },
+        name: { type: GraphQLString }
+    }
+});
+
+const countryType = new GraphQLObjectType({
+    name: 'Country',
+    fields: {
+        iso_3166_1: { type: GraphQLString },
+        name: { type: GraphQLString }
+    }
+});
+
+const langType = new GraphQLObjectType({
+    name: 'Lang',
+    fields: {
+        iso_639_1: { type: GraphQLString },
+        name: { type: GraphQLString }
+    }
+});
+
+const TvType = new GraphQLObjectType({
+    name: 'Show',
+    description: 'A Tv Show that matched a search',
+    fields: {
+      backdrop_path: { type: GraphQLString },
+      first_air_date: { type: GraphQLString },
+      genre_ids: {type: new GraphQLList(GraphQLInt)},
+      id: globalIdField('Show'),
+      original_language: { type: GraphQLString },
+      original_name: { type: GraphQLString },
+      overview: { type: GraphQLString },
+      origin_country: {type: new GraphQLList(GraphQLString)},
+      poster_path: { type: GraphQLString },
+      popularity: { type: GraphQLFloat },
+      name: { type: GraphQLString },
+      vote_average: { type: GraphQLFloat },
+      vote_count: { type: GraphQLInt },
+      media_type: { type: GraphQLString }
+  }
+});
+
+const MovieType = new GraphQLObjectType({
+    name: 'Movie',
+    description: 'A Movie that matched a search',
+    fields: {
+        adult: { type: GraphQLBoolean },
+        backdrop_path: { type: GraphQLString },
+        genre_ids: {type: new GraphQLList(GraphQLInt)},
+        id: globalIdField('Movie'),
+        original_language: { type: GraphQLString },
+        original_title: { type: GraphQLString },
+        overview: { type: GraphQLString },
+        origin_country: {type: new GraphQLList(GraphQLString)},
+        release_date: { type: GraphQLString },
+        poster_path: { type: GraphQLString },
+        popularity: { type: GraphQLFloat },
+        title: { type: GraphQLString },
+        video: { type: GraphQLBoolean },
+        vote_average: { type: GraphQLFloat },
+        vote_count: { type: GraphQLInt },
+        media_type: { type: GraphQLString }
+    }
+})
+
+const multimediaType = new GraphQLUnionType({
+    name: 'MultiMedia',
+    types: [TvType, MovieType],
+    resolveType(val) {
+        const type = val.media_type === 'tv' ? TvType : MovieType;
+
+        return type;
+    }
+})
+
+
+const MultiQuery = new GraphQLObjectType({
+    name: 'MultiQuery',
+    fields: () => ({
+        page: { type: GraphQLInt },
+        results: {type: new GraphQLList(multimediaType)},
+        total_pages: { type: GraphQLInt },
+        total_results: { type: GraphQLInt }
+    })
+})
+
+const ShowQuery = new GraphQLObjectType({
+    name: 'ShowQuery',
+    fields: () => ({
+        backdrop_path: { type: GraphQLString },
+        created_by: {type: new GraphQLList(creatorType)},
+        episode_run_time: {type: new GraphQLList(GraphQLInt)},
+        first_air_date: { type: GraphQLString },
+        genres: {type: new GraphQLList(genType)},
+        homepage: { type: GraphQLString },
+        id: {type: GraphQLInt},
+        in_production: {type: GraphQLBoolean },
+        languages: {type: new GraphQLList(GraphQLString)},
+        last_air_date: { type: GraphQLString },
+        name: { type: GraphQLString },
+        networks: {type: new GraphQLList(genType)},
+        number_of_episodes: { type: GraphQLInt },
+        number_of_seasons: { type: GraphQLInt },
+        origin_country: {type: new GraphQLList(GraphQLString)},
+        original_language: { type: GraphQLString },
+        original_name: { type: GraphQLString },
+        overview: { type: GraphQLString },
+        popularity: { type: GraphQLFloat },
+        poster_path: { type: GraphQLString },
+        production_companies: {type: new GraphQLList(genType)},
+        seasons: {type: new GraphQLList(seasonType)},
+        status: { type: GraphQLString },
+        type: { type: GraphQLString },
+        vote_average: { type: GraphQLFloat },
+        vote_count: { type: GraphQLInt }
+    })
+});
+
+const MovieQuery = new GraphQLObjectType({
+    name: 'MovieQuery',
+    fields: () => ({
+        adult: { type: GraphQLBoolean },
+        backdrop_path: { type: GraphQLString },
+        belongs_to_collection: { type: GraphQLString },
+        budget: { type: GraphQLInt },
+        genres: {type: new GraphQLList(genType)},
+        homepage: { type: GraphQLString },
+        id: {type: GraphQLInt},
+        imdb_id: { type: GraphQLString },
+        original_language: { type: GraphQLString },
+        original_title: { type: GraphQLString },
+        overview: { type: GraphQLString },
+        popularity: { type: GraphQLFloat },
+        poster_path: { type: GraphQLString },
+        production_companies: {type: new GraphQLList(genType)},
+        production_countries: {type: new GraphQLList(countryType)},
+        release_date: { type: GraphQLString },
+        revenue: { type: GraphQLInt },
+        runtime: { type: GraphQLInt },
+        spoken_languages: {type: new GraphQLList(langType)},
+        status: { type: GraphQLString },
+        tagline: { type: GraphQLString },
+        title: { type: GraphQLString },
+        video: { type: GraphQLBoolean},
+        vote_average: { type: GraphQLFloat },
+        vote_count: { type: GraphQLInt }
+    })
+})
+
+const multiQuery = (name) => {
+    return new Promise((resolve, reject) =>
+        mdb.searchMulti({query: name }, (err, res) => {
+            console.log(res);
+            if (err) {return reject(err)}
+
+            return resolve(res);
+        })
+    );
+};
+
+
+const movieDetails = (id) => {
+    return new Promise((resolve, reject) => {
+        mdb.movieInfo({id: id }, (err, res) => {
+            if (err) {return reject(err)}
+
+            return resolve(res);
+        });
+    });
+};
+
+const showDetails = (id) => {
+    return new Promise((resolve, reject) => {
+        mdb.tvInfo({id: id }, (err, res) => {
+            if (err) {return reject(err)}
+
+            resolve(res);
+        });
+    });
+}
+
+
+const GraphQLUser = new GraphQLObjectType({
   name: 'User',
-  description: 'A person who uses our app',
-  fields: () => ({
+  fields: {
     id: globalIdField('User'),
-    widgets: {
-      type: widgetConnection,
-      description: 'A person\'s collection of widgets',
-      args: connectionArgs,
-      resolve: (_, args) => connectionFromArray(getWidgets(), args),
-    },
-  }),
+    results: {
+      type: multimediaType,
+      args: {
+        name: {
+          type: GraphQLString,
+          defaultValue: 'any',
+        },
+      },
+      resolve: (obj, {name, ...args}) => multiQuery(name),
+    }
+  },
   interfaces: [nodeInterface],
 });
 
-var widgetType = new GraphQLObjectType({
-  name: 'Widget',
-  description: 'A shiny widget',
-  fields: () => ({
-    id: globalIdField('Widget'),
-    name: {
-      type: GraphQLString,
-      description: 'The name of the widget',
-    },
-  }),
-  interfaces: [nodeInterface],
-});
-
-/**
- * Define your own connection types here
- */
-var {connectionType: widgetConnection} =
-  connectionDefinitions({name: 'Widget', nodeType: widgetType});
-
-/**
- * This is the type that will be the root of our query,
- * and the entry point into our schema.
- */
-var queryType = new GraphQLObjectType({
-  name: 'Query',
-  fields: () => ({
-    node: nodeField,
-    // Add your own root fields here
+const Root = new GraphQLObjectType({
+  name: 'Root',
+  fields: {
     viewer: {
-      type: userType,
-      resolve: () => getViewer(),
+      type: GraphQLUser,
+      resolve: () => multiQuery(),
     },
-  }),
+    node: nodeField,
+  },
 });
 
-/**
- * This is the type that will be the root of our mutations,
- * and the entry point into performing writes in our schema.
- */
-var mutationType = new GraphQLObjectType({
-  name: 'Mutation',
-  fields: () => ({
-    // Add your own mutations here
-  })
+const schema = new GraphQLSchema({
+    query: Root
 });
 
-/**
- * Finally, we construct our schema (whose starting query type is the query
- * type we defined above) and export it.
- */
-export var Schema = new GraphQLSchema({
-  query: queryType,
-  // Uncomment the following after adding some mutation fields:
-  // mutation: mutationType
-});
+export default schema;
+
+
+// query: new GraphQLObjectType({
+//     name: 'Query',
+//     fields: {
+//         node: nodeField,
+//         multi: {
+//             type: MultiQuery,
+//             args: {
+//                 name: { type: GraphQLString }
+//             },
+//             resolve: (_, args) => multiQuery(args.name)
+//         },
+//         show: {
+//             type: ShowQuery,
+//             args: {
+//                 id: { type: GraphQLInt }
+//             },
+//             resolve: (_, args) => movieDetails(args.id)
+//         },
+//         movie: {
+//             type: MovieQuery,
+//             args: {
+//                 id: { type: GraphQLInt }
+//             },
+//             resolve: (_, args) => showDetails(args.id)
+//         }
+//     }
+// })
