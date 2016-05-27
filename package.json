@@ -4,13 +4,14 @@
   "repository": "lucky7id/discoverio",
   "version": "0.1.0",
   "scripts": {
-    "dev": "webpack-dev-server --config ./webpack.config.js --inline --progress --profile --colors --watch --display-error-details --display-cached --content-base src/client",
+    "dev": "cross-env __DEV__=true webpack-dev-server --config ./webpack.config.js --inline --progress --profile --colors --watch --display-error-details --display-cached --hot",
     "build:server": "cross-env __SRV__=true webpack --config ./webpack.config.js --progress --colors",
     "start:server": "babel-node ./dist/server.js",
     "build:client": "webpack --config ./webpack.config.js --progress --colors",
     "update-schema": "babel-node ./src/server/updateSchema.js --presets es2015"
   },
   "dependencies": {
+    "animate.css": "^3.5.1",
     "babel-core": "^6.7.7",
     "babel-loader": "6.2.4",
     "babel-polyfill": "6.7.4",
@@ -25,6 +26,8 @@
     "css-loader": "^0.23.1",
     "express": "4.13.4",
     "express-graphql": "0.5.1",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "file-loader": "^0.8.5",
     "graphql": "0.5.0",
     "graphql-relay": "0.4.1",
     "html-loader": "^0.4.3",
@@ -44,6 +47,7 @@
     "redux-thunk": "^2.1.0",
     "sass-loader": "^3.2.0",
     "source-map-support": "^0.4.0",
+    "style-loader": "^0.13.1",
     "webpack": "1.13.0",
     "webpack-dev-server": "1.14.1"
   },

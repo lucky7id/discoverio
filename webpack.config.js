@@ -7,6 +7,7 @@ const isServer = process.env.__SRV__;
  */
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const packageSort = (a, b) => {
     switch (a.names[0]) {
@@ -26,7 +27,7 @@ const FE = {
 
     entry: {
         'vendor': './src/vendor.js',
-        'browser': './src/index.js'
+        'browser': './src/index.js',
     },
 
     modulesDirectories: ['node_modules'],
@@ -38,7 +39,7 @@ const FE = {
         chunkFilename: '[name].chunk.js'
     },
 
-    devtool: 'cheap-module-source-map',
+    devtool: 'source-map',
 
     resolve: {
         extensions: [
@@ -71,8 +72,8 @@ const FE = {
              * See: https://github.com/webpack/raw-loader
              */
             {
-              test: /\.sass$/,
-              loaders: ['style', 'css', 'sass']
+              test: /\.s(a|c)ss$/,
+              loader: ExtractTextPlugin.extract('style', 'css!sass')
             },
 
             /* Raw loader support for *.html
@@ -84,15 +85,24 @@ const FE = {
               test: /\.html$/,
               loader: 'html-loader',
               exclude: []
+            },
+
+
+            {
+                test: /\.(eot|woff2|woff|ttf|svg)$/,
+                loader: 'file-loader',
+                exclude: []
             }
         ]
     },
 
     sassLoader: {
-        includePaths: [path.resolve(__dirname, 'src/client/assets/styles')]
+        includePaths: [path.resolve(__dirname, 'src/client/assets')]
     },
 
     plugins: [
+        new ExtractTextPlugin("style.css"),
+
         new webpack.HotModuleReplacementPlugin(),
         /*
          * Plugin: OccurenceOrderPlugin
@@ -144,7 +154,8 @@ const FE = {
             aggregateTimeout: 300,
             poll: 1000
         },
-        outputPath: './dist'
+        outputPath: './dist',
+        contentBase: path.join(__dirname, 'src/client/src')
     }
 };
 

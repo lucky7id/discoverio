@@ -27,7 +27,7 @@ type Movie {
   adult: Boolean
   backdrop_path: String
   genre_ids: [Int]
-  id: ID!
+  id: Int
   original_language: String
   original_title: String
   overview: String
@@ -102,7 +102,7 @@ type Show {
   backdrop_path: String
   first_air_date: String
   genre_ids: [Int]
-  id: ID!
+  id: Int
   original_language: String
   original_name: String
   overview: String
