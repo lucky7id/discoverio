@@ -54,7 +54,7 @@ const FE = {
               loaders: [`babel-loader?presets[]=react,presets[]=es2015,passPerPreset=true`],
               include: path.join(__dirname, 'src', 'client'),
 
-          },
+            },
             /*
              * Json loader support for *.json files.
              *

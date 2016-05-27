@@ -10,8 +10,8 @@ const cors = require('cors');
 
 
 express()
-  .options('*', cors())
-  .use('/graphql', cors(),  graphqlHTTP({ schema: schema, pretty: true }))
-  .listen(3000);
+    .options('*', cors())
+    .use('/graphql', cors(),  graphqlHTTP({ schema: schema, pretty: true }))
+    .listen(3000);
 
 console.log('GraphQL server running on http://localhost:3000/graphql');

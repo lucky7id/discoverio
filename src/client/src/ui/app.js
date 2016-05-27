@@ -16,20 +16,20 @@ class App extends React.Component {
     render() {
         return (
             <div>
-            <JumboTron extraClasses={[]} url="http://i.imgur.com/g65f3jk.png">
-                <div className="row margin-top-md">
-                    <div className="col-md-6 col-md-offset-2">
-                        <JumboSearch/>
+                <JumboTron extraClasses={[]} url="http://i.imgur.com/g65f3jk.png">
+                    <div className="row margin-top-md">
+                        <div className="col-md-6 col-md-offset-2">
+                            <JumboSearch/>
+                        </div>
+                    </div>
+                    <MainNav />
+                </JumboTron>
+                <div className="container-fluid main" >
+                    <div className="row">
+                        <MovieTile />
                     </div>
                 </div>
-                <MainNav />
-            </JumboTron>
-            <div className="container-fluid main" >
-              <div className="row">
-                <MovieTile />
-              </div>
             </div>
-        </div>
         )
     }
 }
