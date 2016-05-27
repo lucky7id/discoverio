@@ -175,6 +175,8 @@ export const searchReducer = (state = initialState, action) => {
 
 //UI Helpers that need to know about state
 const getImgUrl = (state, url, size) => {
+    // Return nothing if URL not yet known
+    if (!url) return null;
     return imgService.expandImgUrl(url, size);
 }
 

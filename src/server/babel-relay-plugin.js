@@ -13,5 +13,5 @@ const source = fs.readFileSync(path.join(__dirname, '../client/routes/AppHomeRou
 
 // compile code with babel using the plugin
 return babel.transform(source, {
-  plugins: [plugin],
+    plugins: [plugin],
 });

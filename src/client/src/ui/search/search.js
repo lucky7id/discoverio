@@ -31,19 +31,21 @@ class JumboSearchComp extends React.Component {
                     if (!result.title && !result.name) {return ''}
 
                     return (
-                        <li tabindex={index}>
+                        <li key={result.id} tabindex={index}>
                             <Link
                                 to={`/details/${result.media_type}/${result.id}`}
                                 key={index}>
                                 <div className="media search-result">
                                     <div className="media-left">
-                                          <img className="media-object" src={
-                                              searchHelpers.getImgUrl(
-                                                  this.props.search,
-                                                  result.poster_path,
-                                                  'w92'
-                                              )
-                                          } alt="..." />
+                                        {result.poster_path && (
+                                            <img className="media-object" src={
+                                                searchHelpers.getImgUrl(
+                                                    this.props.search,
+                                                    result.poster_path,
+                                                    'w92'
+                                                )
+                                                } alt="..." />
+                                        )}
                                     </div>
                                     <div className="media-body">
                                         <h5>{result.title || result.name}</h5>
@@ -76,13 +78,13 @@ class JumboSearchComp extends React.Component {
         return (
             <div>
                 <div className="input-group">
-                  <input type="text" className="form-control"
-                    placeholder="Discover a new movie with a word..."
-                    onBlur={(e) => this.clearSearch(e) }
-                    onChange={(e) => this.getSearchResults(e)}/>
-                  <span className="input-group-addon">
-                    <i className="material-icons">search</i>
-                  </span>
+                    <input type="text" className="form-control"
+                        placeholder="Discover a new movie with a word..."
+                        onBlur={(e) => this.clearSearch(e) }
+                        onChange={(e) => this.getSearchResults(e)}/>
+                    <span className="input-group-addon">
+                        <i className="material-icons">search</i>
+                    </span>
                 </div>
                 <div className="dropdown">
                     { this.renderResults(this.props.search.results) }

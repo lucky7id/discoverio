@@ -1,44 +1,44 @@
 import config from  '../config.json';
 import MovieDb from 'moviedb';
 import {
-  GraphQLBoolean,
-  GraphQLFloat,
-  GraphQLID,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLUnionType,
-  GraphQLSchema,
-  GraphQLString,
+    GraphQLBoolean,
+    GraphQLFloat,
+    GraphQLID,
+    GraphQLInt,
+    GraphQLList,
+    GraphQLNonNull,
+    GraphQLObjectType,
+    GraphQLUnionType,
+    GraphQLSchema,
+    GraphQLString,
 } from 'graphql';
 
 import {
-  connectionArgs,
-  connectionDefinitions,
-  connectionFromArray,
-  fromGlobalId,
-  globalIdField,
-  mutationWithClientMutationId,
-  nodeDefinitions,
+    connectionArgs,
+    connectionDefinitions,
+    connectionFromArray,
+    fromGlobalId,
+    globalIdField,
+    mutationWithClientMutationId,
+    nodeDefinitions,
 } from 'graphql-relay';
 
 const mdb = MovieDb(config.api_key);
 
 const { nodeInterface, nodeField } = nodeDefinitions(
-  globalId => {
-      var {type, id} = fromGlobalId(globalId);
+    globalId => {
+        var {type, id} = fromGlobalId(globalId);
 
-      return data[type][id];
-  },
-  object => {
-    switch (object.media_type) {
-        case 'tv':
-            return 'Show';
-        case 'movie':
-            return 'Movie';
+        return data[type][id];
+    },
+    object => {
+        switch (object.media_type) {
+            case 'tv':
+                return 'Show';
+            case 'movie':
+                return 'Movie';
+        }
     }
-  }
 );
 
 const creatorType = new GraphQLObjectType({
@@ -89,21 +89,21 @@ const TvType = new GraphQLObjectType({
     name: 'Show',
     description: 'A Tv Show that matched a search',
     fields: {
-      backdrop_path: { type: GraphQLString },
-      first_air_date: { type: GraphQLString },
-      genre_ids: {type: new GraphQLList(GraphQLInt)},
-      id: { type: GraphQLInt },
-      original_language: { type: GraphQLString },
-      original_name: { type: GraphQLString },
-      overview: { type: GraphQLString },
-      origin_country: {type: new GraphQLList(GraphQLString)},
-      poster_path: { type: GraphQLString },
-      popularity: { type: GraphQLFloat },
-      name: { type: GraphQLString },
-      vote_average: { type: GraphQLFloat },
-      vote_count: { type: GraphQLInt },
-      media_type: { type: GraphQLString }
-  }
+        backdrop_path: { type: GraphQLString },
+        first_air_date: { type: GraphQLString },
+        genre_ids: {type: new GraphQLList(GraphQLInt)},
+        id: { type: GraphQLInt },
+        original_language: { type: GraphQLString },
+        original_name: { type: GraphQLString },
+        overview: { type: GraphQLString },
+        origin_country: {type: new GraphQLList(GraphQLString)},
+        poster_path: { type: GraphQLString },
+        popularity: { type: GraphQLFloat },
+        name: { type: GraphQLString },
+        vote_average: { type: GraphQLFloat },
+        vote_count: { type: GraphQLInt },
+        media_type: { type: GraphQLString }
+    }
 });
 
 const MovieType = new GraphQLObjectType({
@@ -248,33 +248,33 @@ const showDetails = (id) => {
 
 
 const schema = new GraphQLSchema({
-  query: new GraphQLObjectType({
-      name: 'Query',
-      fields: {
-          node: nodeField,
-          multi: {
-              type: MultiQuery,
-              args: {
-                  name: { type: GraphQLString }
-              },
-              resolve: (_, args) => multiQuery(args.name)
-          },
-          show: {
-              type: ShowQuery,
-              args: {
-                  id: { type: GraphQLInt }
-              },
-              resolve: (_, args) => movieDetails(args.id)
-          },
-          movie: {
-              type: MovieQuery,
-              args: {
-                  id: { type: GraphQLInt }
-              },
-              resolve: (_, args) => showDetails(args.id)
-          }
-      }
-  })
+    query: new GraphQLObjectType({
+        name: 'Query',
+        fields: {
+            node: nodeField,
+            multi: {
+                type: MultiQuery,
+                args: {
+                    name: { type: GraphQLString }
+                },
+                resolve: (_, args) => multiQuery(args.name)
+            },
+            show: {
+                type: ShowQuery,
+                args: {
+                    id: { type: GraphQLInt }
+                },
+                resolve: (_, args) => movieDetails(args.id)
+            },
+            movie: {
+                type: MovieQuery,
+                args: {
+                    id: { type: GraphQLInt }
+                },
+                resolve: (_, args) => showDetails(args.id)
+            }
+        }
+    })
 });
 
 export default schema;
