@@ -6,7 +6,7 @@ var getBabelRelayPlugin = require('babel-relay-plugin');
 
 // load previously saved schema data (see "Schema JSON" below)
 var schema = require('./data/schema.json');
-console.log(schema);
+
 // create a plugin instance
 var plugin = getBabelRelayPlugin(schema.data);
 const source = fs.readFileSync(path.join(__dirname, '../client/routes/AppHomeRoute.js'));
