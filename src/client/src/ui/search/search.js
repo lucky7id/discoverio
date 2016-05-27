@@ -37,13 +37,15 @@ class JumboSearchComp extends React.Component {
                                 key={index}>
                                 <div className="media search-result">
                                     <div className="media-left">
-                                        <img className="media-object" src={
-                                            searchHelpers.getImgUrl(
-                                                this.props.search,
-                                                result.poster_path,
-                                                'w92'
-                                            )
-                                            } alt="..." />
+                                        {result.poster_path && (
+                                            <img className="media-object" src={
+                                                searchHelpers.getImgUrl(
+                                                    this.props.search,
+                                                    result.poster_path,
+                                                    'w92'
+                                                )
+                                                } alt="..." />
+                                        )}
                                     </div>
                                     <div className="media-body">
                                         <h5>{result.title || result.name}</h5>
