@@ -31,7 +31,7 @@ class JumboSearchComp extends React.Component {
                     if (!result.title && !result.name) {return ''}
 
                     return (
-                        <li tabindex={index}>
+                        <li key={result.id} tabindex={index}>
                             <Link
                                 to={`/details/${result.media_type}/${result.id}`}
                                 key={index}>

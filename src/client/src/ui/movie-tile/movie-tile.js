@@ -20,7 +20,7 @@ class MovieTile extends React.Component {
 
     getMovieTile(movie) {
         return (
-            <div className="col-md-3 movie-tile animated fadeInUp">
+            <div key={movie.id} className="col-md-3 movie-tile animated fadeInUp">
                 <div className="thumbnail" style={{background: `url('${searchHelpers.getImgUrl(
                     this.props.search,
                     movie.poster_path,
