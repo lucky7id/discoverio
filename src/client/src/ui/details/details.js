@@ -39,8 +39,7 @@ class Details extends React.Component {
                     extraClasses={['jumbotron-xl']}
                     url="http://i.imgur.com/g65f3jk.png"
                     style={{
-                        background: `url('${searchHelpers.getImgUrl(this.props.search, media.backdrop_path,'original')}')`,
-                        backgroundSize: 'cover'
+                        background: `url('${searchHelpers.getImgUrl(this.props.search, media.backdrop_path,'original')}') 0% 0% / cover`,
                     }}
                     >
                     <div className="container-fluid">
