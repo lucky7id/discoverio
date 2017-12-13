@@ -30,8 +30,8 @@ const history = syncHistoryWithStore(browserHistory, store);
 render(
     <Provider store={store}>
         <Router onUpdate={() => window.scrollTo(0, 0)} history={history}>
-            <Route path="/" component={App}></Route>
-            <Route path="/details/:type/:id" component={Details}></Route>
+            <Route path="/discover/" component={App}></Route>
+            <Route path="/discover/details/:type/:id" component={Details}></Route>
         </Router>
     </Provider>,
   document.getElementById('app')
