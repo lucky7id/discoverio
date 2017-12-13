@@ -7,13 +7,16 @@ import {
     clearSearchInput,
     getMovieDetails,
     getShowDetails,
-    searchHelpers
+    searchHelpers,
+    getConfig
 } from '../../domain/search'
+
 
 class Details extends React.Component {
 
     constructor(props) {
         super(props);
+        this.props.dispatch(getConfig());
         this.props.dispatch(clearSearchInput());
 
         this.fetchSelectionDetails(
