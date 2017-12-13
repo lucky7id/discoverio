@@ -33,7 +33,7 @@ class MovieTile extends React.Component {
                             <p className="val"> {Math.round(movie.vote_average * 10)/10} </p>
                             <i className="material-icons">star </i>
                         </div>
-                        <Link className="btn btn-primary btn-block" to={`/details/movie/${movie.id}`}>Details</Link>
+                        <Link className="btn btn-primary btn-block" to={`/discover/details/movie/${movie.id}`}>Details</Link>
                     </div>
                 </div>
             </div>

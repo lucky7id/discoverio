@@ -33,7 +33,7 @@ class JumboSearchComp extends React.Component {
                     return (
                         <li key={result.id} tabindex={index}>
                             <Link
-                                to={`/details/${result.media_type}/${result.id}`}
+                                to={`/discover//details/${result.media_type}/${result.id}`}
                                 key={index}>
                                 <div className="media search-result">
                                     <div className="media-left">
