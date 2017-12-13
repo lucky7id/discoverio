@@ -36,7 +36,8 @@ const FE = {
         filename: '[name].js',
         sourceMapFilename: '[name].map',
         path: path.join(__dirname, 'dist'),
-        chunkFilename: '[name].chunk.js'
+        chunkFilename: '[name].chunk.js',
+        publicPath: '/'
     },
 
     devtool: 'source-map',
